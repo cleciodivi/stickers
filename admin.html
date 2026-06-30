@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Painel Administrativo - StickerControl</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="admin.css" />
+  </head>
+  <body>
+    <div class="admin-container">
+      <!-- Login Screen -->
+      <div id="loginScreen" class="login-screen">
+        <div class="login-box">
+          <div class="logo">
+            <span class="logo-icon">🔐</span>
+            <span class="logo-text"
+              >Painel <span class="highlight">Admin</span></span
+            >
+          </div>
+          <p class="subtitle">Acesso restrito ao administrador</p>
+
+          <div id="errorMessage" class="error-message"></div>
+
+          <form id="adminLoginForm">
+            <div class="form-group">
+              <label>E-mail</label>
+              <input
+                type="email"
+                id="adminEmail"
+                placeholder="admin@email.com"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label>Senha</label>
+              <input
+                type="password"
+                id="adminPassword"
+                placeholder="Sua senha"
+                required
+              />
+            </div>
+            <button type="submit" class="btn btn-primary">
+              Acessar Painel
+            </button>
+          </form>
+
+          <a href="index.html" class="back-link">← Voltar para o site</a>
+        </div>
+      </div>
+
+      <!-- Dashboard Screen -->
+      <div id="dashboardScreen" class="dashboard-screen hidden">
+        <!-- Header -->
+        <header class="admin-header">
+          <div class="header-left">
+            <span class="logo-icon">🔐</span>
+            <span class="header-title">Painel Administrativo</span>
+          </div>
+          <div class="header-right">
+            <span id="adminUserName" class="admin-name"></span>
+            <a href="index.html" class="btn-back">← Voltar para o Sistema</a>
+            <button onclick="logout()" class="btn-logout">Sair</button>
+          </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+          <!-- Stats Cards -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon">👥</div>
+              <div class="stat-info">
+                <div class="stat-number" id="totalUsers">0</div>
+                <div class="stat-label">Usuários Cadastrados</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">📅</div>
+              <div class="stat-info">
+                <div class="stat-number" id="todayUsers">0</div>
+                <div class="stat-label">Cadastros Hoje</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">🏆</div>
+              <div class="stat-info">
+                <div class="stat-number" id="totalStickers">0</div>
+                <div class="stat-label">Total de Figurinhas</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Users Table -->
+          <div class="table-container">
+            <div class="table-header">
+              <h2>👥 Usuários Cadastrados</h2>
+              <button onclick="loadUsers()" class="btn-refresh">
+                🔄 Atualizar
+              </button>
+            </div>
+
+            <div class="table-wrapper">
+              <table
+                id="usersTable"
+                class="users-table"
+                style="min-height: 100px"
+              >
+                <thead>
+                  <tr>
+                    <th>Nome</th>
+                    <th>E-mail</th>
+                    <th>Data de Cadastro</th>
+                    <th>Status</th>
+                    <th>Figurinhas</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody
+                  id="usersTableBody"
+                  style="
+                    min-height: 50px;
+                    background: rgba(255, 255, 255, 0.02);
+                  "
+                >
+                  <!-- Users will be loaded here -->
+                </tbody>
+              </table>
+            </div>
+
+            <div id="loadingMessage" class="loading-message">
+              Carregando usuários...
+            </div>
+            <div id="emptyMessage" class="empty-message hidden">
+              Nenhum usuário cadastrado ainda.
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="admin.js"></script>
+  </body>
+</html>

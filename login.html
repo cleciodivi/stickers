@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - StickerControl</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        background: linear-gradient(
+          135deg,
+          #0f0f1a 0%,
+          #1a1a2e 50%,
+          #16213e 100%
+        );
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .login-container {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 24px;
+        padding: 48px;
+        width: 100%;
+        max-width: 420px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      }
+
+      .logo {
+        text-align: center;
+        margin-bottom: 32px;
+      }
+
+      .logo-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+        display: block;
+      }
+
+      .logo-text {
+        font-size: 28px;
+        font-weight: 800;
+        color: white;
+      }
+
+      .logo-text .highlight {
+        background: linear-gradient(135deg, #00d4aa 0%, #00a884 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .subtitle {
+        text-align: center;
+        color: rgba(255, 255, 255, 0.6);
+        margin-bottom: 32px;
+        font-size: 14px;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 14px;
+        font-weight: 500;
+        margin-bottom: 8px;
+      }
+
+      input {
+        width: 100%;
+        padding: 14px 18px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        color: white;
+        font-size: 15px;
+        font-family: inherit;
+        transition: all 0.3s ease;
+      }
+
+      input:focus {
+        outline: none;
+        border-color: #00d4aa;
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      input::placeholder {
+        color: rgba(255, 255, 255, 0.3);
+      }
+
+      .btn {
+        width: 100%;
+        padding: 16px;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-bottom: 12px;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #00d4aa 0%, #00a884 100%);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(0, 212, 170, 0.3);
+      }
+
+      .btn-secondary {
+        background: transparent;
+        color: rgba(255, 255, 255, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.3);
+      }
+
+      .error-message {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        color: #ef4444;
+        padding: 12px 16px;
+        border-radius: 8px;
+        font-size: 14px;
+        margin-bottom: 20px;
+        display: none;
+      }
+
+      .error-message.show {
+        display: block;
+      }
+
+      .success-message {
+        background: rgba(0, 212, 170, 0.1);
+        border: 1px solid rgba(0, 212, 170, 0.3);
+        color: #00d4aa;
+        padding: 12px 16px;
+        border-radius: 8px;
+        font-size: 14px;
+        margin-bottom: 20px;
+        display: none;
+      }
+
+      .success-message.show {
+        display: block;
+      }
+
+      .loading {
+        display: none;
+        text-align: center;
+        color: rgba(255, 255, 255, 0.6);
+        margin-bottom: 20px;
+      }
+
+      .loading.show {
+        display: block;
+      }
+
+      .divider {
+        text-align: center;
+        margin: 24px 0;
+        position: relative;
+      }
+
+      .divider::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .divider span {
+        background: rgba(30, 30, 50, 0.9);
+        padding: 0 16px;
+        color: rgba(255, 255, 255, 0.4);
+        font-size: 13px;
+        position: relative;
+      }
+
+      .toggle-form {
+        text-align: center;
+        margin-top: 20px;
+      }
+
+      .toggle-form a {
+        color: #00d4aa;
+        text-decoration: none;
+        font-weight: 500;
+        cursor: pointer;
+      }
+
+      .toggle-form a:hover {
+        text-decoration: underline;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-container">
+      <div class="logo">
+        <span class="logo-icon">🏆</span>
+        <span class="logo-text"
+          >Sticker<span class="highlight">Control</span></span
+        >
+      </div>
+
+      <p class="subtitle">Gerencie sua coleção de figurinhas da Copa 2026</p>
+
+      <div id="errorMessage" class="error-message"></div>
+      <div id="successMessage" class="success-message"></div>
+      <div id="loading" class="loading">Carregando...</div>
+
+      <!-- Login Form -->
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="loginEmail">E-mail</label>
+          <input
+            type="email"
+            id="loginEmail"
+            placeholder="seu@email.com"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">Senha</label>
+          <input
+            type="password"
+            id="loginPassword"
+            placeholder="Sua senha"
+            required
+          />
+        </div>
+        <button type="submit" class="btn btn-primary">Entrar</button>
+
+        <div class="toggle-form">
+          <p>Não tem conta? <a id="showRegister">Cadastre-se</a></p>
+        </div>
+      </form>
+
+      <!-- Register Form -->
+      <form id="registerForm" class="hidden">
+        <div class="form-group">
+          <label for="registerName">Nome</label>
+          <input
+            type="text"
+            id="registerName"
+            placeholder="Seu nome"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="registerEmail">E-mail</label>
+          <input
+            type="email"
+            id="registerEmail"
+            placeholder="seu@email.com"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="registerPassword">Senha</label>
+          <input
+            type="password"
+            id="registerPassword"
+            placeholder="Mínimo 6 caracteres"
+            required
+            minlength="6"
+          />
+        </div>
+        <div class="form-group">
+          <label for="registerPasswordConfirm">Confirmar Senha</label>
+          <input
+            type="password"
+            id="registerPasswordConfirm"
+            placeholder="Confirme sua senha"
+            required
+          />
+        </div>
+        <button type="submit" class="btn btn-primary">Criar Conta</button>
+
+        <div class="toggle-form">
+          <p>Já tem conta? <a id="showLogin">Faça login</a></p>
+        </div>
+      </form>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="login.js"></script>
+  </body>
+</html>
