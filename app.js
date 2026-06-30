@@ -12,8 +12,8 @@ let currentUser = null;
 let isLoading = true;
 
 const CONFIG = {
-  totalFigurinhas: 480, // 24 seleções x 20 figurinhas
-  figurinhasPorTime: 20, // 1 emblema + 1 foto do time + 18 jogadores
+  totalFigurinhas: 528, // 24 seleções x 22 figurinhas
+  figurinhasPorTime: 22, // 1 emblema + 1 foto do time + 20 jogadores
   times: [
     // Grupo A
     { codigo: "MEX", nome: "México", bandeira: "🇲🇽", grupo: "A" },
@@ -68,7 +68,12 @@ const CONFIG = {
     // Grupo K
     { codigo: "COL", nome: "Colômbia", bandeira: "🇨🇴", grupo: "K" },
     { codigo: "POR", nome: "Portugal", bandeira: "🇵🇹", grupo: "K" },
-    { codigo: "COD", nome: "República Democrática do Congo", bandeira: "🇨🇩", grupo: "K" },
+    {
+      codigo: "COD",
+      nome: "República Democrática do Congo",
+      bandeira: "🇨🇩",
+      grupo: "K",
+    },
     { codigo: "UZB", nome: "Uzbequistão", bandeira: "🇺🇿", grupo: "K" },
     // Grupo L
     { codigo: "ENG", nome: "Inglaterra", bandeira: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", grupo: "L" },
@@ -217,7 +222,7 @@ function createSampleData() {
   CONFIG.times.forEach((time) => {
     for (let i = 0; i < CONFIG.figurinhasPorTime; i++) {
       const id = `${time.codigo}_${i}`;
-      // 0: emblema, 1: foto do time, 2-19: jogadores
+      // 0: emblema, 1: foto do time, 2-21: jogadores
       let tipo, nome;
       if (i === 0) {
         tipo = "emblema";
