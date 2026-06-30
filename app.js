@@ -192,6 +192,13 @@ async function initData() {
         appState.figurinhas = data.figurinhas;
         appState.repetidas = data.repetidas || {};
         appState.trocas = data.trocas || { oferecidas: [], desejadas: [] };
+
+        // Sincronizar com configuração atual (adicionar novas figurinhas ou remover times antigos)
+        const configChanged = syncStickerConfig();
+        if (configChanged) {
+          console.log("Configuração de figurinhas atualizada");
+          await saveData();
+        }
       } else {
         // Create initial data if no figurinhas
         console.log("No figurinhas found, creating sample data");
@@ -210,10 +217,40 @@ async function initData() {
     const savedData = localStorage.getItem("stickerControlData");
     if (savedData) {
       appState = JSON.parse(savedData);
+      const configChanged = syncStickerConfig();
+      if (configChanged) {
+        await saveData();
+      }
     } else {
       createSampleData();
     }
   }
+}
+
+function createStickerData(time, i, numero) {
+  const id = `${time.codigo}_${i}`;
+  // 0: emblema, 1: foto do time, 2-21: jogadores
+  let tipo, nome;
+  if (i === 0) {
+    tipo = "emblema";
+    nome = "Emblema";
+  } else if (i === 1) {
+    tipo = "foto";
+    nome = "Foto do Time";
+  } else {
+    tipo = "jogador";
+    nome = `Jogador ${i - 1}`;
+  }
+
+  return {
+    id: id,
+    numero: numero,
+    time: time.codigo,
+    tipo: tipo,
+    nome: nome,
+    status: "faltante",
+    quantidade: 0,
+  };
 }
 
 function createSampleData() {
@@ -221,47 +258,24 @@ function createSampleData() {
 
   CONFIG.times.forEach((time) => {
     for (let i = 0; i < CONFIG.figurinhasPorTime; i++) {
-      const id = `${time.codigo}_${i}`;
-      // 0: emblema, 1: foto do time, 2-21: jogadores
-      let tipo, nome;
-      if (i === 0) {
-        tipo = "emblema";
-        nome = "Emblema";
-      } else if (i === 1) {
-        tipo = "foto";
-        nome = "Foto do Time";
-      } else {
-        tipo = "jogador";
-        nome = `Jogador ${i - 1}`;
-      }
+      const figurinha = createStickerData(time, i, numero);
 
       // Simular algumas figurinhas já obtidas (aleatório)
       const random = Math.random();
-      let status = "faltante";
-      let quantidade = 0;
-
       if (random > 0.6) {
-        status = "possuida";
-        quantidade = 1;
+        figurinha.status = "possuida";
+        figurinha.quantidade = 1;
 
         // Algumas repetidas
         if (random > 0.9) {
-          quantidade = Math.floor(Math.random() * 3) + 2;
+          figurinha.quantidade = Math.floor(Math.random() * 3) + 2;
         }
       }
 
-      appState.figurinhas[id] = {
-        id: id,
-        numero: numero,
-        time: time.codigo,
-        tipo: tipo,
-        nome: nome,
-        status: status,
-        quantidade: quantidade,
-      };
+      appState.figurinhas[figurinha.id] = figurinha;
 
-      if (quantidade > 1) {
-        appState.repetidas[id] = quantidade - 1;
+      if (figurinha.quantidade > 1) {
+        appState.repetidas[figurinha.id] = figurinha.quantidade - 1;
       }
 
       numero++;
@@ -269,6 +283,46 @@ function createSampleData() {
   });
 
   saveData();
+}
+
+function syncStickerConfig() {
+  let numero = 1;
+  let changed = false;
+
+  CONFIG.times.forEach((time) => {
+    for (let i = 0; i < CONFIG.figurinhasPorTime; i++) {
+      const id = `${time.codigo}_${i}`;
+
+      if (!appState.figurinhas[id]) {
+        appState.figurinhas[id] = createStickerData(time, i, numero);
+        changed = true;
+      } else {
+        // Garantir que número e tipo estejam corretos mesmo se o time mudou
+        appState.figurinhas[id].numero = numero;
+        appState.figurinhas[id].time = time.codigo;
+      }
+
+      numero++;
+    }
+  });
+
+  // Remover figurinhas de times/códigos antigos que não existem mais
+  const validIds = new Set();
+  CONFIG.times.forEach((time) => {
+    for (let i = 0; i < CONFIG.figurinhasPorTime; i++) {
+      validIds.add(`${time.codigo}_${i}`);
+    }
+  });
+
+  Object.keys(appState.figurinhas).forEach((id) => {
+    if (!validIds.has(id)) {
+      delete appState.figurinhas[id];
+      delete appState.repetidas[id];
+      changed = true;
+    }
+  });
+
+  return changed;
 }
 
 async function saveData() {
