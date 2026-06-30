@@ -13,7 +13,7 @@ let isLoading = true;
 
 const CONFIG = {
   totalFigurinhas: 528, // 24 seleções x 22 figurinhas
-  figurinhasPorTime: 22, // 1 emblema + 1 foto do time + 20 jogadores
+  figurinhasPorTime: 22, // 1 foto do time + 1 emblema + 20 jogadores
   times: [
     // Grupo A
     { codigo: "MEX", nome: "México", bandeira: "🇲🇽", grupo: "A" },
@@ -229,14 +229,14 @@ async function initData() {
 
 function createStickerData(time, i, numero) {
   const id = `${time.codigo}_${i}`;
-  // 0: emblema, 1: foto do time, 2-21: jogadores
+  // 0: foto do time, 1: emblema, 2-21: jogadores 1-20
   let tipo, nome;
   if (i === 0) {
-    tipo = "emblema";
-    nome = "Emblema";
-  } else if (i === 1) {
     tipo = "foto";
     nome = "Foto do Time";
+  } else if (i === 1) {
+    tipo = "emblema";
+    nome = "Emblema";
   } else {
     tipo = "jogador";
     nome = `Jogador ${i - 1}`;
@@ -468,15 +468,15 @@ function renderTeamsAccordion() {
       (f) => f.time === time.codigo,
     );
 
-    // Ordenar: emblema primeiro, depois foto, depois jogadores por número
+    // Ordenar: foto do time primeiro, depois emblema, depois jogadores por número
     timeFigurinhas.sort((a, b) => {
-      // Emblema primeiro
-      if (a.tipo === "emblema") return -1;
-      if (b.tipo === "emblema") return 1;
-
-      // Foto do time segundo
+      // Foto do time primeiro
       if (a.tipo === "foto") return -1;
       if (b.tipo === "foto") return 1;
+
+      // Emblema segundo
+      if (a.tipo === "emblema") return -1;
+      if (b.tipo === "emblema") return 1;
 
       // Jogadores em ordem crescente de número
       return a.numero - b.numero;
