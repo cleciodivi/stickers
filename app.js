@@ -12,8 +12,8 @@ let currentUser = null;
 let isLoading = true;
 
 const CONFIG = {
-  totalFigurinhas: 504, // 24 seleções x 21 figurinhas
-  figurinhasPorTime: 21, // 1 foto do time + 1 emblema + 19 jogadores
+  totalFigurinhas: 528, // 24 seleções x 22 figurinhas
+  figurinhasPorTime: 22, // 1 foto do time + 1 emblema + 20 jogadores
   times: [
     // Grupo A
     { codigo: "MEX", nome: "México", bandeira: "🇲🇽", grupo: "A" },
@@ -229,7 +229,7 @@ async function initData() {
 
 function createStickerData(time, i, numero) {
   const id = `${time.codigo}_${i}`;
-  // 0: foto do time, 1: emblema (antigo jogador 1), 2-20: jogadores 2-20
+  // 0: foto do time, 1: emblema, 2-21: jogadores 2-21
   let tipo, nome;
   if (i === 0) {
     tipo = "foto";
