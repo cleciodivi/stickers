@@ -182,22 +182,6 @@ async function loadUsers() {
   }
 }
 
-function calculateUserStats(user) {
-  const figurinhas = user.figurinhas || {};
-  const total = Object.keys(figurinhas).length || CONFIG.totalFigurinhas || 528;
-  const possuidas = Object.values(figurinhas).filter(
-    (f) => f && (f.status === "possuida" || f.status === "repetida"),
-  ).length;
-  const faltantes = total - possuidas;
-  const repetidas = Object.values(user.repetidas || {}).reduce(
-    (a, b) => a + b,
-    0,
-  );
-  const percentual = total > 0 ? Math.round((possuidas / total) * 100) : 0;
-
-  return { total, possuidas, faltantes, repetidas, percentual };
-}
-
 function renderUsersTable(users) {
   console.log("Rendering users table:", users);
 
@@ -229,7 +213,12 @@ function renderUsersTable(users) {
 
     const userName = user.name || `Usuário ${user.id.substring(0, 8)}...`;
     const userEmail = user.email || "Email não disponível";
-    const stats = calculateUserStats(user);
+
+    // Contar figurinhas
+    const figurinhas = user.figurinhas || {};
+    const possuidas = Object.values(figurinhas).filter(
+      (f) => f && (f.status === "possuida" || f.status === "repetida"),
+    ).length;
 
     // Formatar data
     let createdAt = "N/A";
@@ -259,17 +248,7 @@ function renderUsersTable(users) {
         <td>${userEmail}</td>
         <td style="color: rgba(255,255,255,0.7); font-size: 13px;">${createdAt}</td>
         <td>${statusHtml}</td>
-        <td>
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <div style="flex: 1; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden;">
-              <div style="width: ${stats.percentual}%; height: 100%; background: linear-gradient(90deg, #00d4aa, #00a884); border-radius: 4px;"></div>
-            </div>
-            <span style="color: #00d4aa; font-weight: 700; font-size: 13px; min-width: 40px; text-align: right;">${stats.percentual}%</span>
-          </div>
-        </td>
-        <td><span style="color: #00d4aa; font-weight: 700;">${stats.possuidas}</span></td>
-        <td><span style="color: #f59e0b; font-weight: 700;">${stats.faltantes}</span></td>
-        <td><span style="color: #3b82f6; font-weight: 700;">${stats.repetidas}</span></td>
+        <td><span style="color: #00d4aa; font-weight: 700;">${possuidas}</span></td>
         <td>
           <button onclick="viewUserDetails('${user.id}')" 
                   style="background: rgba(0,212,170,0.1); border: 1px solid rgba(0,212,170,0.3); 
@@ -307,25 +286,14 @@ async function loadStats() {
 
     // Total stickers (sum of all users)
     let totalStickers = 0;
-    let totalPercentual = 0;
-    let usersWithData = 0;
-
     usersSnapshot.forEach((doc) => {
       const data = doc.data();
-      const stats = calculateUserStats(data);
-      totalStickers += stats.possuidas;
-      if (stats.total > 0) {
-        totalPercentual += stats.percentual;
-        usersWithData++;
-      }
+      const figurinhas = data.figurinhas || {};
+      totalStickers += Object.values(figurinhas).filter(
+        (f) => f.status === "possuida" || f.status === "repetida",
+      ).length;
     });
-
     document.getElementById("totalStickers").textContent = totalStickers;
-
-    const avgCompletion = usersWithData > 0
-      ? Math.round(totalPercentual / usersWithData)
-      : 0;
-    document.getElementById("avgCompletion").textContent = `${avgCompletion}%`;
   } catch (error) {
     console.error("Error loading stats:", error);
   }
@@ -348,7 +316,17 @@ async function viewUserDetails(userId) {
     const doc = await db.collection("users").doc(userId).get();
     if (doc.exists) {
       const data = doc.data();
-      const stats = calculateUserStats(data);
+      const figurinhas = data.figurinhas || {};
+      const possuidas = Object.values(figurinhas).filter(
+        (f) => f.status === "possuida" || f.status === "repetida",
+      ).length;
+      const faltantes = Object.values(figurinhas).filter(
+        (f) => f.status === "faltante",
+      ).length;
+      const repetidas = Object.values(data.repetidas || {}).reduce(
+        (a, b) => a + b,
+        0,
+      );
 
       const status = data.blocked ? "🔴 BLOQUEADO" : "🟢 ATIVO";
 
@@ -359,11 +337,9 @@ E-mail: ${data.email || "N/A"}
 Status: ${status}
 
 Figurinhas:
-- Total no álbum: ${stats.total}
-- Possuídas: ${stats.possuidas}
-- Faltantes: ${stats.faltantes}
-- Repetidas: ${stats.repetidas}
-- Progresso: ${stats.percentual}%
+- Possuídas: ${possuidas}
+- Faltantes: ${faltantes}
+- Repetidas: ${repetidas}
 
 Cadastrado em: ${data.createdAt ? formatDate(data.createdAt.toDate()) : "N/A"}`);
     }
